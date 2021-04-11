@@ -1,16 +1,28 @@
 import nltk
-from nltk.stem import WordNetLemmatizer
-lemmatizer = WordNetLemmatizer()
-import json
-import pickle
-import numpy as np
-from keras.models import Sequential
-from keras.layers import Dense, Activation, Dropout
-from keras.optimizers import SGD
+from nltk.stem.lancaster import LancasterStemmer
+stemmer = LancasterStemmer()
+
+import numpy
+import tflearn
+import tensorflow
 import random
-words=[]
-classes = []
-documents = []
-ignore_words = ['?', '!']
-data_file = open('intents.json').read()
-intents = json.loads(data_file)
+
+import json
+with open('intents.json') as file:
+    data = json.load(file)
+
+
+words = []
+labels = []
+docs_x = []
+docs_y = []
+
+for intent in data['intents']:
+    for pattern in intent['patterns']:
+        wrds = nltk.word_tokenize(pattern)
+        words.extend(wrds)
+        docs_x.append(wrds)
+        docs_y.append(intent["tag"])
+        
+    if intent['tag'] not in labels:
+        labels.append(intent['tag'])
